@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Neighborhood</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <div id="content" class="shadow noselect">
+        <div class="category">The Neighborhood</div>
+    </div>
+    <div id="button" class="noselect shadow">
+        New Round
+    </div>
+    <script>
+        const probabilities = {
+            "Strength": 7,
+            "Wisdom": 7,
+            "Charisma": 6,
+            "Speed": 5,
+            "Coolness": 4,
+            "Nature": 3,
+            "Allergies": 3,
+            "Foodie": 2,
+            "Jeff": 1,
+        };
+        const categories = Object.keys(probabilities);
+        const probList = [];
+        let total = 0;
+        for (let i = 0; i < categories.length; i++) {
+            total += probabilities[categories[i]];
+            probList.push(total);
+        }
+
+        const button = document.getElementById("button");
+        const content = document.getElementById("content");
+        button.addEventListener("click", function () {
+            content.innerHTML = "";
+            const roll = Math.ceil(Math.random() * 2) + 1;
+            const alreadyChosen = new Set();
+            for (let i = 0; i < roll; i++) {
+                let category = "";
+                do {
+                    const rVal = Math.ceil(Math.random() * total);
+                    let index = 0;
+                    while (index < probList.length && probList[index] < rVal) {
+                        index++;
+                    }
+                    category = categories[index];
+                }
+                while (alreadyChosen.has(category));
+                alreadyChosen.add(category);
+                content.innerHTML += (`<div class="category">${category}</div>`);
+            }
+        });
+    </script>
+</body>
+
+</html>
