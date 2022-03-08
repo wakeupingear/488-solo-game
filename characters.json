@@ -1,3 +1,20 @@
 {
-    
+    "bgColor": "#003F7D",
+    "borderColor": "#FF5003",
+    "bgImage": "https://www.maxfosterphotography.com/images/xl/Bob-Ross-Mountain-Summit.jpg",
+    "height": 1024,
+    "width": 768,
+    "imageSize": 256,
+    "characters":[
+        {
+            "name": "Dodge Charger the Human Terrarium",
+            "image": "https://hips.hearstapps.com/hmg-prod/amv-prod-cad-assets/images/media/672263/2017-dodge-charger-in-depth-model-review-car-and-driver-photo-699331-s-original.jpg",
+            "traits": [
+                "+5 Speed",
+                "-5 Nature"
+            ],
+            "crop":[64,0],
+            "style": "https://m.media-amazon.com/images/I/71TE+Eg79IL._AC_SL1024_.jpg"
+        }
+    ]
 }
