@@ -1,3 +1,9 @@
+import tensorflow_hub as hub
+import tensorflow as tf
+from simplejson import load
+import urllib.request
+from urllib.parse import urlparse
+from ast import arg
 from PIL import ImageColor, Image, ImageDraw, ImageFont
 import numpy as np
 import matplotlib as mpl
@@ -5,14 +11,11 @@ import matplotlib.pyplot as plt
 import json
 
 import os
+import sys
 os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-from urllib.parse import urlparse
-from simplejson import load
 print("Importing tensorflow...")
-import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-import tensorflow_hub as hub
 print("Loading model...")
 hub_model = hub.load(
     'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
@@ -56,9 +59,12 @@ def imshow(image, title=None):
         plt.title(title)
 
 
-def loadStyle(url):
-    return tf.keras.utils.get_file(
-        urlparse(url).path.split("/")[-1], url)
+def load(url):
+    path = url.replace("https://", "").replace("http://",
+                                               "").replace("www.", "").replace("/", "")
+    file = tf.keras.utils.get_file(
+        path, url)
+    return file
 
 
 def wrap_text(text, width, font):
@@ -66,7 +72,6 @@ def wrap_text(text, width, font):
     text_line = []
     text = text.replace('\n', ' [br] ')
     words = text.split()
-    font_size = font.getsize(text)
 
     for word in words:
         if word == '[br]':
@@ -102,9 +107,8 @@ def main():
     print("Loading characters...")
     f = open("characters.json", "r+")
     data = json.load(f)
-    saveDir = "art/"
 
-    defaultStyle = loadStyle(data["bgImage"])
+    defaultStyle = load(data["styles"][0])
     widthHalved = (data["width"] - imageSize)//2
     offset = (widthHalved, widthHalved-64)
 
@@ -119,51 +123,71 @@ def main():
     if not os.path.exists("art"):
         print("Creating new art directory")
         os.makedirs("art")
-    
-    for character in data["characters"]:
-        print(character["name"]+"...")
-        image = character["image"].replace(".JPG", ".JPEG")
-        ext = os.path.splitext(image)[1]
-        content_path = tf.keras.utils.get_file(
-            character["name"]+ext, image)
-        content_image = load_img(content_path)
-        style_path = defaultStyle
-        if ("style" in character):
-            style_path = loadStyle(character["style"])
-        style_image = load_img(style_path)
 
-        stylized_image = hub_model(tf.constant(
-            content_image), tf.constant(style_image))[0]
-        stylized_image = tensor_to_image(stylized_image)
+    # check first cli argument
+    if len(sys.argv) > 1:
+        key = sys.argv[1:]
+        key = ' '.join(key)
+        key=key.replace("[", "").replace("]", "")
+        key=key.split(",")
+        for character in key:
+            character=character.strip()
+            found=False
+            for obj in data["characters"]:
+                if (character==obj["name"]):
+                    process(obj, data, defaultStyle,
+                            frontTemplate, backTemplate, offset)
+                    found=True
+                    break
+            if not found:
+                print("Character not found")
+    else:
+        for character in data["characters"]:
+            process(character, data, defaultStyle, frontTemplate, backTemplate, offset)
 
-        width, height = stylized_image.size
-        size = min(width, height)
-        left = (width - size)/2
-        top = (height - size)/2
-        right = (width + size)/2
-        bottom = (height + size)/2
-        cropOff = (0, 0)
-        if ("crop" in character):
-            cropOff = character["crop"]
-        stylized_image = stylized_image.crop(
-            (left+cropOff[0], top+cropOff[1], right+cropOff[0], bottom+cropOff[1]))
-        stylized_image = stylized_image.resize((imageSize, imageSize))
+saveDir = "art/"
+def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
+    print(character["name"]+"...")
+    image = character["image"]
+    content_path = load(image,)
+    content_image = load_img(content_path)
+    style_path = defaultStyle
+    if ("style" in character):
+        style_path = load(data["styles"][character["style"]])
+    style_image = load_img(style_path)
 
-        front = frontTemplate.copy()
-        fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 80)
-        drawText(front, character["name"],
-                 (front.size[0]//2, imageSize+100), fnt)
-        front.paste(stylized_image, (offset[0], offset[1]))
+    stylized_image = hub_model(tf.constant(
+        content_image), tf.constant(style_image))[0]
+    stylized_image = tensor_to_image(stylized_image)
 
-        back = backTemplate.copy()
-        height = drawText(back, character["name"], (back.size[0]//2, 40), fnt)
-        traits = "\n".join(character["traits"])
-        drawText(back, traits, (back.size[0]//2, height+300), fnt)
+    width, height = stylized_image.size
+    size = min(width, height)
+    left = (width - size)/2
+    top = (height - size)/2
+    right = (width + size)/2
+    bottom = (height + size)/2
+    cropOff = (0, 0)
+    if ("crop" in character):
+        cropOff = character["crop"]
+    stylized_image = stylized_image.crop(
+        (left+cropOff[0], top+cropOff[1], right+cropOff[0], bottom+cropOff[1]))
+    stylized_image = stylized_image.resize((imageSize, imageSize))
 
-        words = character["name"].split(" ")
-        filename = "".join(words[:min(len(words), 2)])
-        front.save(saveDir+filename+"_front.png")
-        back.save(saveDir+filename+"_back.png")
+    front = frontTemplate.copy()
+    fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 80)
+    drawText(front, character["name"],
+             (front.size[0]//2, imageSize+100), fnt)
+    front.paste(stylized_image, (offset[0], offset[1]))
+
+    back = backTemplate.copy()
+    height = drawText(back, character["name"], (back.size[0]//2, 40), fnt)
+    traits = "\n".join(character["traits"])
+    drawText(back, traits, (back.size[0]//2, height+300), fnt)
+
+    words = character["name"].split(" ")
+    filename = "".join(words[:min(len(words), 2)])
+    front.save(saveDir+filename+"_front.png")
+    back.save(saveDir+filename+"_back.png")
 
 
 if __name__ == "__main__":
