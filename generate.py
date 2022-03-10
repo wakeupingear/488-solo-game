@@ -153,7 +153,11 @@ def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
     content_image = load_img(content_path)
     style_path = defaultStyle
     if ("style" in character):
-        style_path = load(data["styles"][character["style"]])
+        #check if the style is a string
+        if (type(character["style"]) is str):
+            style_path = load(character["style"])
+        else:
+            style_path = load(data["styles"][character["style"]])
     style_image = load_img(style_path)
 
     stylized_image = hub_model(tf.constant(

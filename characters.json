@@ -2,8 +2,17 @@
     "bgColor": "#003F7D",
     "borderColor": "#FF5003",
     "styles": [
+        "https://assets.vogue.com/photos/58b9984661298051ac278def/master/w_2560%2Cc_limit/00-holding-lorde-album-art.jpg",
+        "https://willfarhat.com/files/rocket.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/1200px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        "https://www.capecodmuseumtrail.com/wp-content/uploads/2019/03/Cult-Pastel.jpg",
+        "https://gamingbolt.com/wp-content/uploads/2017/02/Hollow-Knight-1280x720.jpg",
+        "https://cdn.vox-cdn.com/uploads/chorus_asset/file/22802887/IMG_DE272BF718E8_1.jpeg",
+        "https://www.si.com/.image/t_share/MTY4MjYxNzY0MjYwMTExNjM3/cal-ripken-.jpg",
         "https://www.maxfosterphotography.com/images/xl/Bob-Ross-Mountain-Summit.jpg",
-        "https://m.media-amazon.com/images/I/71TE+Eg79IL._AC_SL1024_.jpg"
+        "https://m.media-amazon.com/images/I/71TE+Eg79IL._AC_SL1024_.jpg",
+        "https://i.pinimg.com/originals/98/e6/06/98e606f718835db2deb3028c23e0d81d.jpg",
+        "https://pyxis.nymag.com/v1/imgs/f90/25c/b1e841b1d5467d2c2f29aefde444c48407-1962-amazing-fantasy-15.w426.jpg"
     ],
     "height": 1024,
     "width": 768,
@@ -34,7 +43,8 @@
                 "+6 Speed",
                 "-2 Coolness",
                 "-6 Nature"
-            ]
+            ],
+            "style":"https://cdn.vox-cdn.com/uploads/chorus_asset/file/22802887/IMG_DE272BF718E8_1.jpeg"
         },
         {
             "name":"Pluto the Human Terrarium",
@@ -123,7 +133,9 @@
                 "+8 Allergies",
                 "-4 Strength",
                 "-3 Speed"
-            ]
+            ],
+            "crop":[0,-32],
+            "style": "https://images.indianexpress.com/2019/01/tin-tin_1.jpg"
         },
         {
             "name":"Jeff's Cousin Jeff",
