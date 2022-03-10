@@ -91,7 +91,7 @@ def wrap_text(text, width, font):
     return text_lines
 
 
-def drawText(image, msg, offset, fnt, fill="white", maxWidth=768):
+def drawText(image, msg, offset, fnt, fill="white", maxWidth=700):
     draw = ImageDraw.Draw(image)
     msg = wrap_text(msg, maxWidth, fnt)
     height = 0
@@ -128,24 +128,28 @@ def main():
     if len(sys.argv) > 1:
         key = sys.argv[1:]
         key = ' '.join(key)
-        key=key.replace("[", "").replace("]", "")
-        key=key.split(",")
+        key = key.replace("[", "").replace("]", "")
+        key = key.split(",")
         for character in key:
-            character=character.strip()
-            found=False
+            character = character.strip()
+            found = False
             for obj in data["characters"]:
-                if (character==obj["name"]):
+                if (character == obj["name"]):
                     process(obj, data, defaultStyle,
                             frontTemplate, backTemplate, offset)
-                    found=True
+                    found = True
                     break
             if not found:
                 print("Character not found")
     else:
         for character in data["characters"]:
-            process(character, data, defaultStyle, frontTemplate, backTemplate, offset)
+            process(character, data, defaultStyle,
+                    frontTemplate, backTemplate, offset)
+
 
 saveDir = "art/"
+
+
 def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
     print(character["name"]+"...")
     image = character["image"]
@@ -153,16 +157,19 @@ def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
     content_image = load_img(content_path)
     style_path = defaultStyle
     if ("style" in character):
-        #check if the style is a string
+        # check if the style is a string
         if (type(character["style"]) is str):
             style_path = load(character["style"])
         else:
             style_path = load(data["styles"][character["style"]])
     style_image = load_img(style_path)
 
-    stylized_image = hub_model(tf.constant(
-        content_image), tf.constant(style_image))[0]
-    stylized_image = tensor_to_image(stylized_image)
+    if (data["useStyle"]):
+        stylized_image = hub_model(tf.constant(
+            content_image), tf.constant(style_image))[0]
+        stylized_image = tensor_to_image(stylized_image)
+    else:
+        stylized_image = tensor_to_image(content_image)
 
     width, height = stylized_image.size
     size = min(width, height)
