@@ -1,7 +1,7 @@
+from math import ceil
 import tensorflow_hub as hub
 import tensorflow as tf
 from simplejson import load
-import urllib.request
 from urllib.parse import urlparse
 from ast import arg
 from PIL import ImageColor, Image, ImageDraw, ImageFont
@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import json
+from fpdf import FPDF
+import glob
 
 import os
 import sys
@@ -91,14 +93,15 @@ def wrap_text(text, width, font):
     return text_lines
 
 
-def drawText(image, msg, offset, fnt, fill="white", maxWidth=700):
+def drawText(image, msg, offset, fnt, fill, maxWidth=700):
     draw = ImageDraw.Draw(image)
+    baseW, baseH = draw.textsize("KSASFLI", font=fnt)
     msg = wrap_text(msg, maxWidth, fnt)
     height = 0
     for i, line in enumerate(msg):
         w, h = draw.textsize(line, font=fnt)
-        height = (h*1.4)*(i)
-        draw.text((-w//2+offset[0], h//2+offset[1] +
+        height = (baseH*1.4)*(i)
+        draw.text((-w//2+offset[0], baseH//2+offset[1] +
                   height), line, fill=fill, font=fnt)
     return height
 
@@ -114,15 +117,28 @@ def main():
 
     bgColor = ImageColor.getcolor(data["bgColor"], "RGBA")
     borderColor = ImageColor.getcolor(data["borderColor"], "RGBA")
-    frontTemplate = Image.new("RGBA", (data["width"], data["height"]), bgColor)
-    backTemplate = frontTemplate.copy()
-    draw = ImageDraw.Draw(frontTemplate)
+    frontColorTemplate = Image.new(
+        "RGBA", (data["width"], data["height"]), bgColor)
+    frontBlackTemplate = Image.new(
+        "RGBA", (data["width"], data["height"]), "#FFFFFF")
+    backColorTemplate = frontColorTemplate.copy()
+    backBlackTemplate = frontBlackTemplate.copy()
+    draw = ImageDraw.Draw(frontColorTemplate)
     draw.rectangle((offset[0]-32, offset[1]-32, offset[0] +
                    imageSize+32, offset[1]+imageSize+32), borderColor)
+    draw = ImageDraw.Draw(frontBlackTemplate)
+    draw.rectangle((offset[0]-32, offset[1]-32, offset[0] +
+                   imageSize+32, offset[1]+imageSize+32), "#888888")
 
     if not os.path.exists("art"):
         print("Creating new art directory")
         os.makedirs("art")
+    if not os.path.exists("art/color"):
+        print("Creating new color directory")
+        os.makedirs("art/color")
+    if not os.path.exists("art/black"):
+        print("Creating new black directory")
+        os.makedirs("art/black")
 
     # check first cli argument
     if len(sys.argv) > 1:
@@ -136,7 +152,7 @@ def main():
             for obj in data["characters"]:
                 if (character == obj["name"]):
                     process(obj, data, defaultStyle,
-                            frontTemplate, backTemplate, offset)
+                            frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset)
                     found = True
                     break
             if not found:
@@ -144,13 +160,44 @@ def main():
     else:
         for character in data["characters"]:
             process(character, data, defaultStyle,
-                    frontTemplate, backTemplate, offset)
+                    frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset)
+
+    print("Creating color fronts...")
+    createPDF("color", "front", False)
+    print("Creating color backs...")
+    createPDF("color", "back", True)
+
+    print("Creating black fronts...")
+    createPDF("black", "front", False)
+    print("Creating black backs...")
+    createPDF("black", "back", True)
 
 
-saveDir = "art/"
+def createPDF(cType, side, reversed):
+    pdf = FPDF()
+    pdf.add_page()
+    cardW = 70
+    cardH = 93
+    x = 0
+    y = 0
+    print(cType)
+    filelist = glob.glob("./art/"+cType+"/*.png")
+    for image in sorted(filelist):
+        if (side in image):
+            pdf.image(image, x=(x*cardW if (not reversed)
+                      else cardW*(2-x)), y=y*cardH, w=cardW, h=cardH)
+            x += 1
+            if (x == 3):
+                x = 0
+                y += 1
+                if (y == 3):
+                    y = 0
+                    pdf.add_page()
+
+    pdf.output(side+cType.capitalize()+"Template.pdf", "F")
 
 
-def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
+def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset):
     print(character["name"]+"...")
     image = character["image"]
     content_path = load(image,)
@@ -184,21 +231,32 @@ def process(character, data, defaultStyle, frontTemplate, backTemplate, offset):
         (left+cropOff[0], top+cropOff[1], right+cropOff[0], bottom+cropOff[1]))
     stylized_image = stylized_image.resize((imageSize, imageSize))
 
+    words = character["name"].split(" ")
+    name = "".join(words[:min(len(words), 2)])
+    writeImages(stylized_image, "./art/color/"+name, character, offset,
+                frontColorTemplate, backColorTemplate)
+    writeImages(stylized_image, "./art/black/"+name, character, offset,
+                frontBlackTemplate, backBlackTemplate)
+
+    return name
+
+
+def writeImages(image, fileName, character, offset, frontTemplate, backTemplate):
+    color = "white" if ("color" in fileName) else "black"
     front = frontTemplate.copy()
     fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 80)
     drawText(front, character["name"],
-             (front.size[0]//2, imageSize+100), fnt)
-    front.paste(stylized_image, (offset[0], offset[1]))
+             (front.size[0]//2, imageSize+100), fnt, color)
+    front.paste(image, (offset[0], offset[1]))
 
     back = backTemplate.copy()
-    height = drawText(back, character["name"], (back.size[0]//2, 40), fnt)
+    height = drawText(back, character["name"],
+                      (back.size[0]//2, 40), fnt, color)
     traits = "\n".join(character["traits"])
-    drawText(back, traits, (back.size[0]//2, height+300), fnt)
+    drawText(back, traits, (back.size[0]//2, height+300), fnt, color)
 
-    words = character["name"].split(" ")
-    filename = "".join(words[:min(len(words), 2)])
-    front.save(saveDir+filename+"_front.png")
-    back.save(saveDir+filename+"_back.png")
+    front.save(fileName+"_front.png")
+    back.save(fileName+"_back.png")
 
 
 if __name__ == "__main__":
