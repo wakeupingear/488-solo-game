@@ -1,10 +1,10 @@
 {
     "bgColor": "#003F7D",
     "borderColor": "#FF5003",
-    "useStyle": false,
+    "borderWidth": 20,
+    "topPadding": 4,
+    "savePdf": false,
     "styles": [
-        "https://m.media-amazon.com/images/I/71+UqhocUvL._AC_SL1024_.jpg",
-        "https://preview.redd.it/l6z63rnsbb021.jpg?width=640&crop=smart&auto=webp&s=f76d2a73280f91f755204b01ea24e229d6edf01a",
         "https://assets.vogue.com/photos/58b9984661298051ac278def/master/w_2560%2Cc_limit/00-holding-lorde-album-art.jpg",
         "https://willfarhat.com/files/rocket.jpg",
         "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/1200px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
@@ -13,12 +13,14 @@
         "https://cdn.vox-cdn.com/uploads/chorus_asset/file/22802887/IMG_DE272BF718E8_1.jpeg",
         "https://www.si.com/.image/t_share/MTY4MjYxNzY0MjYwMTExNjM3/cal-ripken-.jpg",
         "https://www.maxfosterphotography.com/images/xl/Bob-Ross-Mountain-Summit.jpg",
+        "https://m.media-amazon.com/images/I/71TE+Eg79IL._AC_SL1024_.jpg",
         "https://i.pinimg.com/originals/98/e6/06/98e606f718835db2deb3028c23e0d81d.jpg",
         "https://pyxis.nymag.com/v1/imgs/f90/25c/b1e841b1d5467d2c2f29aefde444c48407-1962-amazing-fantasy-15.w426.jpg"
     ],
     "height": 1024,
     "width": 768,
     "imageSize": 256,
+    "useStyle": false,
     "characters":[
         {
             "name": "June Montgomery",
@@ -49,7 +51,7 @@
         },
         {
             "name":"Pluto the Human Terrarium",
-            "image": "https://media.istockphoto.com/photos/happy-dirty-child-having-fun-on-black-sand-beach-picture-id1203666914?s=2048x2048",
+            "image": "https://media.istockphoto.com/photos/happy-dirty-child-having-fun-on-black-sand-beach-picture-id1203666914",
             "traits":[
                 "+5 Nature",
                 "+3 Allergies",
@@ -58,7 +60,7 @@
         },
         {
             "name": "Chester Fester",
-            "image": "https://media.istockphoto.com/photos/the-boy-eats-a-zephyr-picture-id89342306?k=20&m=89342306&s=612x612&w=0&h=_C5Dyt0Wtbn7KVeB0UMirL-PNcMdWpA2hgtzaZ8gS4E=",
+            "image": "https://media.istockphoto.com/photos/the-boy-eats-a-zephyr-picture-id89342306",
             "traits":[
                 "+6 Foodie",
                 "-1 Everything Else"
@@ -66,7 +68,7 @@
         },
         {
             "name": "MOMMM!!!!",
-            "image": "https://media.istockphoto.com/photos/close-up-portrait-of-crying-little-toddler-girl-with-outdoors-child-picture-id1074635972?k=20&m=1074635972&s=612x612&w=0&h=1I2lq0KXTir26jGQgwMVkqcEiKwXOVr20Zbyxfm80WM=",
+            "image": "https://media.istockphoto.com/photos/close-up-portrait-of-crying-little-toddler-girl-with-outdoors-child-picture-id1074635972",
             "traits":[
                 "+5 Wisdom",
                 "+1 Speed",
@@ -102,7 +104,7 @@
         },
         {
             "name":"That Nosy Neighbor",
-            "image": "https://ca-times.brightspotcdn.com/dims4/default/5cb95d7/2147483647/strip/true/crop/1800x1772+0+0/resize/1486x1463!/quality/90/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F42%2Faa%2Fdf1ee83562957e1005075818dc86%2Fla-1541209326-2bt0l1jrcb-snap-image",
+            "image": "https://arc-anglerfish-arc2-prod-tbt.s3.amazonaws.com/public/SWLNDTGER4I6TKTRIBWI6S7HAY.jpg",
             "traits":[
                 "+3 Speed",
                 "+3 Wisdom",

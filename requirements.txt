@@ -4,3 +4,4 @@ matplotlib
 tensorflow
 tensorflow_hub
 FPDF
+simplejson

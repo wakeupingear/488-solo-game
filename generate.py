@@ -26,6 +26,11 @@ mpl.rcParams['figure.figsize'] = (12, 12)
 mpl.rcParams['axes.grid'] = False
 imageSize = 512
 
+f = open("characters.json", "r+")
+data = json.load(f)
+borderColor = ImageColor.getcolor(data["borderColor"], "RGBA")
+borderWidth = data["borderWidth"]
+topPadding = data["topPadding"]
 
 def tensor_to_image(tensor):
     tensor = tensor*255
@@ -98,37 +103,41 @@ def drawText(image, msg, offset, fnt, fill, maxWidth=700):
     baseW, baseH = draw.textsize("KSASFLI", font=fnt)
     msg = wrap_text(msg, maxWidth, fnt)
     height = 0
+    lineCount=0
     for i, line in enumerate(msg):
         w, h = draw.textsize(line, font=fnt)
         height = (baseH*1.4)*(i)
+        lineCount+=1
         draw.text((-w//2+offset[0], baseH//2+offset[1] +
                   height), line, fill=fill, font=fnt)
-    return height
+    return (baseH*1.4)*(lineCount)+baseH*0.6
+
+def drawImage(image, offset, card, colored):
+    draw=-1
+    if colored:
+        draw = ImageDraw.Draw(card)
+        draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] +
+                   imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), borderColor)
+    else:
+        draw = ImageDraw.Draw(card)
+        draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] +
+                   imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), "#888888")
+    card.paste(image, (int(offset[0]), int(offset[1]+borderWidth)))
+    return image.size[1]+borderWidth*2
 
 
 def main():
-    print("Loading characters...")
-    f = open("characters.json", "r+")
-    data = json.load(f)
-
     defaultStyle = load(data["styles"][0])
     widthHalved = (data["width"] - imageSize)//2
-    offset = (widthHalved, widthHalved-64)
+    offset = (widthHalved, topPadding)
 
     bgColor = ImageColor.getcolor(data["bgColor"], "RGBA")
-    borderColor = ImageColor.getcolor(data["borderColor"], "RGBA")
     frontColorTemplate = Image.new(
         "RGBA", (data["width"], data["height"]), bgColor)
     frontBlackTemplate = Image.new(
         "RGBA", (data["width"], data["height"]), "#FFFFFF")
     backColorTemplate = frontColorTemplate.copy()
     backBlackTemplate = frontBlackTemplate.copy()
-    draw = ImageDraw.Draw(frontColorTemplate)
-    draw.rectangle((offset[0]-32, offset[1]-32, offset[0] +
-                   imageSize+32, offset[1]+imageSize+32), borderColor)
-    draw = ImageDraw.Draw(frontBlackTemplate)
-    draw.rectangle((offset[0]-32, offset[1]-32, offset[0] +
-                   imageSize+32, offset[1]+imageSize+32), "#888888")
 
     if not os.path.exists("art"):
         print("Creating new art directory")
@@ -161,7 +170,8 @@ def main():
         for character in data["characters"]:
             process(character, data, defaultStyle,
                     frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset)
-
+    if not data["savePdf"]:
+        exit(0)
     print("Creating color fronts...")
     createPDF("color", "front", False)
     print("Creating color backs...")
@@ -199,7 +209,7 @@ def createPDF(cType, side, reversed):
 
 def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset):
     print(character["name"]+"...")
-    image = character["image"]
+    image = character["image"].split("?")[0]
     content_path = load(image,)
     content_image = load_img(content_path)
     style_path = defaultStyle
@@ -242,20 +252,27 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
 
 
 def writeImages(image, fileName, character, offset, frontTemplate, backTemplate):
+    imageWidth, imageHeight = image.size
     color = "white" if ("color" in fileName) else "black"
-    front = frontTemplate.copy()
-    fnt = ImageFont.truetype("Pillow/Tests/fonts/FreeMono.ttf", 80)
-    drawText(front, character["name"],
-             (front.size[0]//2, imageSize+100), fnt, color)
-    front.paste(image, (offset[0], offset[1]))
-
-    back = backTemplate.copy()
-    height = drawText(back, character["name"],
-                      (back.size[0]//2, 40), fnt, color)
+    fnt = ImageFont.truetype("./FreeMono.ttf", 80)
+    fntSmall = ImageFont.truetype("./FreeMono.ttf", 60)
     traits = "\n".join(character["traits"])
-    drawText(back, traits, (back.size[0]//2, height+300), fnt, color)
 
+    front = frontTemplate.copy()
+    height = offset[1]
+    height+=drawText(front, character["name"],
+             (front.size[0]//2, height), fnt, color)
+    height+=100
+    height+=drawImage(image, (offset[0],height), front, color=="white")
     front.save(fileName+"_front.png")
+
+    
+    back = backTemplate.copy()
+    height = offset[1]
+    height+=drawText(back, character["name"],
+             (front.size[0]//2, height), fnt, color)
+    height+=drawImage(image, (offset[0],height), back, color=="white")
+    height+=drawText(back, traits, (back.size[0]//2, height), fntSmall, color)
     back.save(fileName+"_back.png")
 
 
