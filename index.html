@@ -22,11 +22,11 @@
     </div>
     <script>
         const probabilities = {
-            "Strength": 6,
-            "Wisdom": 6,
-            "Charisma": 6,
-            "Speed": 5,
-            "Coolness": 4,
+            "Strength": 4,
+            "Wisdom": 4,
+            "Charisma":4,
+            "Speed": 4,
+            "Coolness": 3,
             "Nature": 3,
             "Allergies": 3,
             "Foodie": 3,
@@ -44,7 +44,7 @@
         const content = document.getElementById("content");
         button.addEventListener("click", function () {
             content.innerHTML = "";
-            const roll = Math.ceil(Math.random() * 2) + 1;
+            const roll = 3;//Math.ceil(Math.random() * 2) + 1;
             const alreadyChosen = new Set();
             for (let i = 0; i < roll; i++) {
                 let category = "";
