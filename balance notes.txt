@@ -1,0 +1,29 @@
+Henry the Entrepreneur          CHARISMA, -allergies, -strength
+Xbox Kid                        SPEED, -coolness, - nature
+Pluto the Human Terrarium       NATURE, allergies, -charisma
+Chester Fester                  FOODIE, allergies, -1 everything else
+MOMMM!!!                        WISDOM, -speed, -coolness
+Mina the MORTAR                 STRENGTH, -foodie, -speed
+Brock Southampton               COOLNESS, speed, -strength
+Katzenberg                      CHARISMA, jeff, -strength
+That Nosy Neighbor              wisdom, foodie, -charisma
+Jaden the Supportive Friend     WISDOM, -speed, -nature
+Fido the Afghan Hound           speed, nature, -wisdom
+Superhero Man                   ALLERGIES, -speed, -strength
+Jeffrey Jefferson               JEFF
+Thaddeus G. Gollywhopper        coolness, charisma, -wisdom
+Dodge Charger                   SPEED, -wisdom, -nature
+Kentucky Wyoming                strength, nature, -speed
+TANK                            STRENGTH, -nature, -speed
+Nina Nirvana                    e v e r y t h i n g
+Jeff's Cousin Jeff              JEFF, allergies
+
+Strength
+Speed
+Coolness
+Nature
+Foodie
+Charisma
+Allergies
+Jeff
+Wisdom

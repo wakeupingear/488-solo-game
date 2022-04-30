@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from math import ceil
 import tensorflow_hub as hub
 import tensorflow as tf
@@ -32,6 +33,12 @@ borderColor = ImageColor.getcolor(data["borderColor"], "RGBA")
 borderWidth = data["borderWidth"]
 topPadding = data["topPadding"]
 
+borderImage = Image.open(data["borderImage"])
+borderImage = borderImage.resize((data["width"], data["height"]))
+borderBackImage = Image.open(data["borderBackImage"])
+borderBackImage = borderBackImage.resize((data["width"], data["height"]))
+
+
 def tensor_to_image(tensor):
     tensor = tensor*255
     tensor = np.array(tensor, dtype=np.uint8)
@@ -42,8 +49,12 @@ def tensor_to_image(tensor):
 
 
 def load_img(path_to_img):
+    print(path_to_img)
     img = tf.io.read_file(path_to_img)
-    img = tf.image.decode_image(img, channels=3)
+    if (path_to_img.endswith(".png")):
+        img = tf.image.decode_png(img, channels=4)
+    else:
+        img = tf.image.decode_jpeg(img, channels=3)
     img = tf.image.convert_image_dtype(img, tf.float32)
 
     shape = tf.cast(tf.shape(img)[:-1], tf.float32)
@@ -57,20 +68,15 @@ def load_img(path_to_img):
     return img
 
 
-def imshow(image, title=None):
-    if len(image.shape) > 3:
-        image = tf.squeeze(image, axis=0)
-
-    plt.imshow(image)
-    if title:
-        plt.title(title)
-
-
 def load(url):
-    path = url.replace("https://", "").replace("http://",
-                                               "").replace("www.", "").replace("/", "")
-    file = tf.keras.utils.get_file(
-        path, url)
+    file = NULL
+    if os.path.exists(url):
+        file = url
+    else:
+        path = url.replace("https://", "").replace("http://",
+                                                   "").replace("www.", "").replace("/", "")
+        file = tf.keras.utils.get_file(
+            path, url)
     return file
 
 
@@ -103,26 +109,25 @@ def drawText(image, msg, offset, fnt, fill, maxWidth=700):
     baseW, baseH = draw.textsize("KSASFLI", font=fnt)
     msg = wrap_text(msg, maxWidth, fnt)
     height = 0
-    lineCount=0
+    lineCount = 0
     for i, line in enumerate(msg):
         w, h = draw.textsize(line, font=fnt)
         height = (baseH*1.4)*(i)
-        lineCount+=1
+        lineCount += 1
         draw.text((-w//2+offset[0], baseH//2+offset[1] +
                   height), line, fill=fill, font=fnt)
     return (baseH*1.4)*(lineCount)+baseH*0.6
 
+
 def drawImage(image, offset, card, colored):
-    draw=-1
+    draw = -1
     if colored:
         draw = ImageDraw.Draw(card)
-        draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] +
-                   imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), borderColor)
+        #draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] + imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), borderColor)
     else:
         draw = ImageDraw.Draw(card)
-        draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] +
-                   imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), "#888888")
-    card.paste(image, (int(offset[0]), int(offset[1]+borderWidth)))
+        # draw.rectangle((offset[0]-borderWidth, offset[1], offset[0] + imageSize+borderWidth, offset[1]+imageSize+borderWidth*2), "#888888")
+    card.paste(image, (int(offset[0]), int(offset[1]+borderWidth)), mask=image)
     return image.size[1]+borderWidth*2
 
 
@@ -134,10 +139,16 @@ def main():
     bgColor = ImageColor.getcolor(data["bgColor"], "RGBA")
     frontColorTemplate = Image.new(
         "RGBA", (data["width"], data["height"]), bgColor)
+    if data["bgImage"] != "":
+        bgImage = Image.open(data["bgImage"])
+        bgImage = bgImage.resize((data["width"], data["height"]))
+        frontColorTemplate.paste(bgImage, (0, 0))
     frontBlackTemplate = Image.new(
         "RGBA", (data["width"], data["height"]), "#FFFFFF")
     backColorTemplate = frontColorTemplate.copy()
     backBlackTemplate = frontBlackTemplate.copy()
+
+    frontColorTemplate.paste(borderImage, (0, 0), borderImage)
 
     if not os.path.exists("art"):
         print("Creating new art directory")
@@ -166,6 +177,7 @@ def main():
                     break
             if not found:
                 print("Character not found")
+        exit(0)
     else:
         for character in data["characters"]:
             process(character, data, defaultStyle,
@@ -210,7 +222,7 @@ def createPDF(cType, side, reversed):
 def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset):
     print(character["name"]+"...")
     image = character["image"].split("?")[0]
-    content_path = load(image,)
+    content_path = load(image)
     content_image = load_img(content_path)
     style_path = defaultStyle
     if ("style" in character):
@@ -227,6 +239,8 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
         stylized_image = tensor_to_image(stylized_image)
     else:
         stylized_image = tensor_to_image(content_image)
+
+    stylized_image = stylized_image.convert("RGBA")
 
     width, height = stylized_image.size
     size = min(width, height)
@@ -252,27 +266,26 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
 
 
 def writeImages(image, fileName, character, offset, frontTemplate, backTemplate):
-    imageWidth, imageHeight = image.size
     color = "white" if ("color" in fileName) else "black"
-    fnt = ImageFont.truetype("./FreeMono.ttf", 80)
-    fntSmall = ImageFont.truetype("./FreeMono.ttf", 60)
+    fnt = ImageFont.truetype(data["font"], 80)
+    fntSmall = ImageFont.truetype(data["font"], 60)
     traits = "\n".join(character["traits"])
 
     front = frontTemplate.copy()
     height = offset[1]
-    height+=drawText(front, character["name"],
-             (front.size[0]//2, height), fnt, color)
-    height+=100
-    height+=drawImage(image, (offset[0],height), front, color=="white")
+    height += drawText(front, character["name"],
+                       (front.size[0]//2, height), fnt, color)
+    height += drawImage(image, (offset[0], height), front, color == "white")
     front.save(fileName+"_front.png")
 
-    
     back = backTemplate.copy()
-    height = offset[1]
-    height+=drawText(back, character["name"],
-             (front.size[0]//2, height), fnt, color)
-    height+=drawImage(image, (offset[0],height), back, color=="white")
-    height+=drawText(back, traits, (back.size[0]//2, height), fntSmall, color)
+    height = offset[1]+20
+    height += drawText(back, character["name"],
+                       (front.size[0]//2, height), fntSmall, color)
+    height += drawImage(image, (offset[0], height), back, color == "white")
+    back.paste(borderBackImage, (0, 0), borderBackImage)
+    drawText(back, traits,
+                       (back.size[0]//2, back.size[1]//1.47), fntSmall, "black")
     back.save(fileName+"_back.png")
 
 

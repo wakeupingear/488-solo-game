@@ -3,7 +3,11 @@
     "borderColor": "#FF5003",
     "borderWidth": 20,
     "topPadding": 4,
-    "savePdf": false,
+    "savePdf": true,
+    "bgImage": "./bg.PNG",
+    "borderImage": "./border.png",
+    "borderBackImage": "./borderBack.png",
+    "font": "./Poppins-Medium.ttf",
     "styles": [
         "https://assets.vogue.com/photos/58b9984661298051ac278def/master/w_2560%2Cc_limit/00-holding-lorde-album-art.jpg",
         "https://willfarhat.com/files/rocket.jpg",
@@ -21,181 +25,175 @@
     "width": 768,
     "imageSize": 256,
     "useStyle": false,
-    "characters":[
-        {
-            "name": "June Montgomery",
-            "image": "https://thumbs.dreamstime.com/b/child-reading-book-kids-read-books-little-boy-sitting-white-couch-sunny-living-room-watching-pictures-story-kid-doing-166396507.jpg",
-            "traits":[
-                "+4 Wisdom",
-                "+1 Foodie",
-                "-3 Speed"
-            ]
-        },
+    "characters": [
         {
             "name": "Henry the Entrepreneur",
-            "image": "https://i.imgur.com/79eazsx.png",
-            "traits":[
-                "+3 Strength",
-                "+2 Charisma",
-                "-6 Allergies"
+            "image": "./characterArt/henry.png",
+            "traits": [
+                "+5 Charisma",
+                "-2 Allergies",
+                "-3 Strength"
             ]
         },
         {
-            "name":"Xbox Kid",
-            "image": "https://pbs.twimg.com/profile_images/2663366501/0090bc0016c8393d4edb771a4b205320_400x400.jpeg",
-            "traits":[
-                "+6 Speed",
+            "name": "Xbox Kid",
+            "image": "./characterArt/xbox.png",
+            "traits": [
+                "+5 Speed",
                 "-2 Coolness",
-                "-6 Nature"
+                "-4 Nature"
             ]
         },
         {
-            "name":"Pluto the Human Terrarium",
-            "image": "https://media.istockphoto.com/photos/happy-dirty-child-having-fun-on-black-sand-beach-picture-id1203666914",
-            "traits":[
+            "name": "Pluto the Human Terrarium",
+            "image": "./characterArt/pluto.png",
+            "traits": [
                 "+5 Nature",
-                "+3 Allergies",
-                "-7 Charisma"
+                "+1 Allergies",
+                "-5 Charisma"
             ]
         },
         {
             "name": "Chester Fester",
-            "image": "https://media.istockphoto.com/photos/the-boy-eats-a-zephyr-picture-id89342306",
-            "traits":[
-                "+6 Foodie",
+            "image": "./characterArt/chester.png",
+            "traits": [
+                "+4 Foodie",
+                "+1 Allergies",
                 "-1 Everything Else"
             ]
         },
         {
             "name": "MOMMM!!!!",
-            "image": "https://media.istockphoto.com/photos/close-up-portrait-of-crying-little-toddler-girl-with-outdoors-child-picture-id1074635972",
-            "traits":[
-                "+5 Wisdom",
-                "+1 Speed",
+            "image": "./characterArt/mom.png",
+            "traits": [
+                "+4 Wisdom",
+                "-1 Speed",
                 "-5 Coolness"
             ]
         },
         {
-            "name":"Mina the MORTAR",
-            "image": "https://thumbs.dreamstime.com/b/smiling-asian-little-girl-showing-his-muscle-looking-camera-isolated-yellow-background-strong-kid-dungarees-good-health-173296628.jpg",
-            "traits":[
+            "name": "Mina the MORTAR",
+            "image": "./characterArt/mina.png",
+            "traits": [
                 "+5 Strength",
-                "+1 Coolness",
-                "-6 Speed"
+                "-1 Foodie",
+                "-4 Speed"
             ]
         },
         {
             "name": "Brock Southampton",
-            "image": "https://static.wikia.nocookie.net/d0578081-750a-4f5e-87a4-fc32835157ab",
-            "traits":[
-                "+3 Strength",
-                "+3 Coolness",
-                "-6 Wisdom"
+            "image": "./characterArt/brock.png",
+            "traits": [
+                "+4 Coolness",
+                "+1 Speed",
+                "-5 Wisdom"
             ]
         },
         {
             "name": "Katzenberg",
             "image": "https://media.istockphoto.com/photos/happy-smile-little-business-kid-picture-id482738542",
-            "traits":[
-                "+5 Jeff",
-                "+1 Strength",
-                "-4 Wisdom"
-            ]
-        },
-        {
-            "name":"That Nosy Neighbor",
-            "image": "https://arc-anglerfish-arc2-prod-tbt.s3.amazonaws.com/public/SWLNDTGER4I6TKTRIBWI6S7HAY.jpg",
-            "traits":[
-                "+3 Speed",
-                "+3 Wisdom",
-                "-7 Coolness"
-            ]
-        },
-        {
-            "name":"Jaden the Supportive Friend",
-            "image": "https://media.istockphoto.com/photos/african-girl-in-headphones-enjoy-showing-thumbs-up-elearning-picture-id1252896426?k=20&m=1252896426&s=612x612&w=0&h=lAydmBGsynJlU2Mg5_-e96rqoxpIeA2Wm4m1J3OT1p4=",
-            "traits":[
-                "+4 Wisdom",
-                "+1 Nature",
-                "-4 Speed"
-            ]
-        },
-        {
-            "name":"Fido the Afghan Hound",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Afghan_dog_-_cropped.jpg",
-            "traits":[
-                "+4 Strength",
-                "+2 Speed",
-                "-4 Wisdom"
-            ]
-        },
-        {
-            "name":"Superhero Man",
-            "image":"https://cdn8.dissolve.com/p/D145_214_516/D145_214_516_1200.jpg",
-            "traits":[
-                "+8 Allergies",
-                "-4 Strength",
-                "-3 Speed"
-            ],
-            "crop":[0,-32]
-        },
-        {
-            "name":"Jeff's Cousin Jeff",
-            "image":"https://media.gettyimages.com/photos/diary-of-a-wimpy-kid-author-jeff-kinney-and-movie-stars-zachary-and-picture-id1372654867?s=612x612",
-            "traits":[
-                "+5 Jeff",
-                "+1 Allergies",
-                "-3 Foodie"
-            ]
-        },
-        {
-            "name":"Thaddeus G. Gollywhopper",
-            "image":"https://thumbs.dreamstime.com/b/rich-kid-asian-boy-u-s-dollar-bank-notes-31512783.jpg",
-            "traits":[
-                "+4 Coolness",
-                "+2 Charisma",
-                "-3 Nature"
-            ]
-        },
-        {
-            "name":"Dodge Charger",
-            "image":"https://upload.wikimedia.org/wikipedia/commons/c/cf/2015_Dodge_Charger_SRT_392_with_Scat_Pack.JPG",
-            "traits":[
-                "+5 Speed",
-                "-2 Nature",
-                "-3 Wisdom"
-            ]
-        },
-        {
-            "name":"Kentucky Wyoming",
-            "image":"https://images.squarespace-cdn.com/content/v1/50631261e4b0e9530e2c53a7/1474213252190-FT95U8DMFQQGM6X5AB4F/Gordon-Cattle-Company-06.jpg",
-            "traits":[
+            "traits": [
                 "+4 Charisma",
-                "+3 Coolness",
+                "+2 Jeff",
                 "-4 Strength"
             ]
         },
         {
-            "name":"TANK",
-            "image":"https://as1.ftcdn.net/v2/jpg/01/76/99/68/1000_F_176996816_9pe1f5r3KtB7p1MYyy61Gjt7FGqnmQdl.jpg",
-            "traits":[
-                "+6 Strength",
-                "-2 Nature",
+            "name": "That Nosy Neighbor",
+            "image": "https://arc-anglerfish-arc2-prod-tbt.s3.amazonaws.com/public/SWLNDTGER4I6TKTRIBWI6S7HAY.jpg",
+            "traits": [
+                "+3 Wisdom",
+                "+3 Foodie",
+                "-5 Charisma"
+            ]
+        },
+        {
+            "name": "Jaden the Supportive Friend",
+            "image": "./characterArt/jaden.png",
+            "traits": [
+                "+5 Wisdom",
+                "-1 Speed",
+                "-3 Nature"
+            ]
+        },
+        {
+            "name": "Fido the Afghan Hound",
+            "image": "./characterArt/fido.png",
+            "traits": [
+                "+3 Speed",
+                "+2 Nature",
+                "-4 Wisdom"
+            ]
+        },
+        {
+            "name": "Superhero Man",
+            "image": "./characterArt/superhero.png",
+            "traits": [
+                "+6 Allergies",
+                "-4 Speed",
+                "-4 Strength"
+            ],
+            "crop": [
+                0,
+                -32
+            ]
+        },
+        {
+            "name": "Jeff's Cousin Jeff",
+            "image": "./characterArt/cousin.png",
+            "traits": [
+                "+4 Jeff",
+                "+1 Allergies"
+            ]
+        },
+        {
+            "name": "Thaddeus G. Gollywhopper",
+            "image": "./characterArt/thaddeus.png",
+            "traits": [
+                "+3 Coolness",
+                "+2 Charisma",
+                "-4 Wisdom"
+            ]
+        },
+        {
+            "name": "Dodge Charger",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/c/cf/2015_Dodge_Charger_SRT_392_with_Scat_Pack.JPG",
+            "traits": [
+                "+5 Speed",
+                "-2 Wisdom",
+                "-4 Nature"
+            ]
+        },
+        {
+            "name": "Kentucky Wyoming",
+            "image": "./characterArt/kentucky.png",
+            "traits": [
+                "+3 Strength",
+                "+3 Nature",
                 "-4 Speed"
             ]
         },
         {
-            "name":"Nina Nirvana",
-            "image":"https://previews.123rf.com/images/subbotina/subbotina1305/subbotina130500001/19562117-la-libre-jouissance-bonne-femme-appr%C3%A9ciant-la-nature-fille-ext%C3%A9rieure.jpg",
-            "traits":[
+            "name": "TANK",
+            "image": "./characterArt/tank.png",
+            "traits": [
+                "+5 Strength",
+                "-3 Nature",
+                "-4 Speed"
+            ]
+        },
+        {
+            "name": "Nina Nirvana",
+            "image": "./characterArt/nina.png",
+            "traits": [
                 "+1 Everything"
             ]
         },
         {
-            "name":"Jeffrey Jefferson",
-            "image":"https://media.gettyimages.com/photos/diary-of-a-wimpy-kid-author-jeff-kinney-and-movie-stars-zachary-and-picture-id1372654867?s=612x612",
-            "traits":[
-                "+7 Jeff"
+            "name": "Jeffrey Jefferson",
+            "image": "./characterArt/jeff.png",
+            "traits": [
+                "+6 Jeff"
             ]
         }
     ]
