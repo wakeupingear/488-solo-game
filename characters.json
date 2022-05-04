@@ -1,6 +1,23 @@
 {
     "bgColor": "#003F7D",
-    "borderColor": "#FF5003",
+    "borderColorDefault": "black",
+    "borderColors": {
+        "black": "#000000",
+        "white": "#FFFFFF",
+        "darkBlue": "#3d3c97",
+        "yellow": "#fed900",
+        "purple": "#874db7",
+        "brown": "#b96659",
+        "red": "#d45352",
+        "lightBlue": "#7f9bf1",
+        "olive": "#88AAA0",
+        "orange": "#ff6229",
+        "pink": "#eb5cd2",
+        "darkBrown": "#67493f",
+        "green": "#547c4b",
+        "tan": "#e2d3ba",
+        "neonGreen": "#5ddd28"
+    },
     "borderWidth": 20,
     "topPadding": 4,
     "savePdf": true,
@@ -27,6 +44,7 @@
     "useStyle": false,
     "characters": [
         {
+            "borderColor": "red",
             "name": "Henry the Entrepreneur",
             "image": "./characterArt/henry.png",
             "traits": [
@@ -36,6 +54,7 @@
             ]
         },
         {
+            "borderColor": "neonGreen",
             "name": "Xbox Kid",
             "image": "./characterArt/xbox.png",
             "traits": [
@@ -45,6 +64,8 @@
             ]
         },
         {
+            "borderColor": "darkBrown",
+            "frontOffset": -10,
             "name": "Pluto the Human Terrarium",
             "image": "./characterArt/pluto.png",
             "traits": [
@@ -54,6 +75,7 @@
             ]
         },
         {
+            "borderColor": "purple",
             "name": "Chester Fester",
             "image": "./characterArt/chester.png",
             "traits": [
@@ -63,6 +85,7 @@
             ]
         },
         {
+            "borderColor": "pink",
             "name": "MOMMM!!!!",
             "image": "./characterArt/mom.png",
             "traits": [
@@ -72,6 +95,7 @@
             ]
         },
         {
+            "borderColor": "orange",
             "name": "Mina the MORTAR",
             "image": "./characterArt/mina.png",
             "traits": [
@@ -81,6 +105,7 @@
             ]
         },
         {
+            "borderColor": "darkBlue",
             "name": "Brock Southampton",
             "image": "./characterArt/brock.png",
             "traits": [
@@ -90,17 +115,10 @@
             ]
         },
         {
-            "name": "Katzenberg",
-            "image": "https://media.istockphoto.com/photos/happy-smile-little-business-kid-picture-id482738542",
-            "traits": [
-                "+4 Charisma",
-                "+2 Jeff",
-                "-4 Strength"
-            ]
-        },
-        {
             "name": "That Nosy Neighbor",
-            "image": "https://arc-anglerfish-arc2-prod-tbt.s3.amazonaws.com/public/SWLNDTGER4I6TKTRIBWI6S7HAY.jpg",
+            "frontOffset": -90,
+            "backOffset": -40,
+            "image": "./characterArt/neighbor.png",
             "traits": [
                 "+3 Wisdom",
                 "+3 Foodie",
@@ -108,6 +126,7 @@
             ]
         },
         {
+            "borderColor": "darkBlue",
             "name": "Jaden the Supportive Friend",
             "image": "./characterArt/jaden.png",
             "traits": [
@@ -117,6 +136,7 @@
             ]
         },
         {
+            "borderColor": "tan",
             "name": "Fido the Afghan Hound",
             "image": "./characterArt/fido.png",
             "traits": [
@@ -126,6 +146,7 @@
             ]
         },
         {
+            "borderColor": "yellow",
             "name": "Superhero Man",
             "image": "./characterArt/superhero.png",
             "traits": [
@@ -139,6 +160,8 @@
             ]
         },
         {
+            "borderColor": "red",
+            "frontOffset": -20,
             "name": "Jeff's Cousin Jeff",
             "image": "./characterArt/cousin.png",
             "traits": [
@@ -147,6 +170,9 @@
             ]
         },
         {
+            "borderColor": "green",
+            "frontOffset": -90,
+            "backOffset": -70,
             "name": "Thaddeus G. Gollywhopper",
             "image": "./characterArt/thaddeus.png",
             "traits": [
@@ -156,15 +182,8 @@
             ]
         },
         {
-            "name": "Dodge Charger",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/c/cf/2015_Dodge_Charger_SRT_392_with_Scat_Pack.JPG",
-            "traits": [
-                "+5 Speed",
-                "-2 Wisdom",
-                "-4 Nature"
-            ]
-        },
-        {
+            "borderColor": "olive",
+            "frontOffset": -90,
             "name": "Kentucky Wyoming",
             "image": "./characterArt/kentucky.png",
             "traits": [
@@ -175,6 +194,7 @@
         },
         {
             "name": "TANK",
+            "backOffset": -60,
             "image": "./characterArt/tank.png",
             "traits": [
                 "+5 Strength",
@@ -183,16 +203,33 @@
             ]
         },
         {
+            "borderColor": "white",
             "name": "Nina Nirvana",
             "image": "./characterArt/nina.png",
             "traits": [
-                "+1 Everything"
+                " ",
+                "+2"
             ]
         },
         {
+            "name": "June Montgomery",
+            "backOffset": -50,
+            "frontOffset": -100,
+            "borderColor": "darkBlue",
+            "image": "./characterArt/june.png",
+            "traits": [
+                "+4 Wisdom",
+                "+1 Foodie",
+                "-3 Speed"
+            ]
+        },
+        {
+            "borderColor": "lightBlue",
+            "frontOffset": -20,
             "name": "Jeffrey Jefferson",
             "image": "./characterArt/jeff.png",
             "traits": [
+                " ",
                 "+6 Jeff"
             ]
         }

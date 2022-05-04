@@ -12,9 +12,12 @@ import matplotlib.pyplot as plt
 import json
 from fpdf import FPDF
 import glob
+from math import floor
 
 import os
 import sys
+
+from torch import clamp_min
 os.environ['TFHUB_MODEL_LOAD_FORMAT'] = 'COMPRESSED'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 print("Importing tensorflow...")
@@ -25,18 +28,38 @@ hub_model = hub.load(
 
 mpl.rcParams['figure.figsize'] = (12, 12)
 mpl.rcParams['axes.grid'] = False
-imageSize = 512
+imageSize = 630
 
 f = open("characters.json", "r+")
 data = json.load(f)
-borderColor = ImageColor.getcolor(data["borderColor"], "RGBA")
 borderWidth = data["borderWidth"]
 topPadding = data["topPadding"]
 
-borderImage = Image.open(data["borderImage"])
-borderImage = borderImage.resize((data["width"], data["height"]))
-borderBackImage = Image.open(data["borderBackImage"])
-borderBackImage = borderBackImage.resize((data["width"], data["height"]))
+borderColorDefault = data["borderColorDefault"]
+borderImageBase = Image.open(data["borderImage"])
+borderImageBase = borderImageBase.resize((data["width"], data["height"]))
+border = {}
+borderBackImageBase = Image.open(data["borderBackImage"])
+borderBackImageBase = borderBackImageBase.resize(
+    (data["width"], data["height"]))
+borderBack = {}
+print("Creating outlines...")
+for key, value in data["borderColors"].items():
+    color = value.lstrip("#")
+    rgb = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+    imgData = np.array(borderImageBase)
+    for x in range(imgData.shape[0]):
+        for y in range(imgData.shape[1]):
+            if imgData[x, y][3] > 0:
+                imgData[x, y] = (max(rgb[0]+imgData[x,y][0]-255,0), max(rgb[1]+imgData[x,y][1]-255,0), max(rgb[2]+imgData[x,y][2]-255,0), imgData[x, y][3])
+    border[key] = Image.fromarray(imgData)
+
+    imgData = np.array(borderBackImageBase)
+    for x in range(imgData.shape[0]):
+        for y in range(imgData.shape[1]):
+            if imgData[x, y][3] > 0:
+                imgData[x, y] = (max(rgb[0]+imgData[x,y][0]-255,0), max(rgb[1]+imgData[x,y][1]-255,0), max(rgb[2]+imgData[x,y][2]-255,0), imgData[x, y][3])
+    borderBack[key] = Image.fromarray(imgData)
 
 
 def tensor_to_image(tensor):
@@ -49,7 +72,6 @@ def tensor_to_image(tensor):
 
 
 def load_img(path_to_img):
-    print(path_to_img)
     img = tf.io.read_file(path_to_img)
     if (path_to_img.endswith(".png")):
         img = tf.image.decode_png(img, channels=4)
@@ -104,7 +126,7 @@ def wrap_text(text, width, font):
     return text_lines
 
 
-def drawText(image, msg, offset, fnt, fill, maxWidth=700):
+def drawText(image, msg, offset, fnt, fill, maxWidth=650, stroke_width=5):
     draw = ImageDraw.Draw(image)
     baseW, baseH = draw.textsize("KSASFLI", font=fnt)
     msg = wrap_text(msg, maxWidth, fnt)
@@ -115,7 +137,9 @@ def drawText(image, msg, offset, fnt, fill, maxWidth=700):
         height = (baseH*1.4)*(i)
         lineCount += 1
         draw.text((-w//2+offset[0], baseH//2+offset[1] +
-                  height), line, fill=fill, font=fnt)
+                  height), line, fill=fill, font=fnt,
+                  stroke_width=stroke_width,
+                  stroke_fill="black")
     return (baseH*1.4)*(lineCount)+baseH*0.6
 
 
@@ -147,8 +171,6 @@ def main():
         "RGBA", (data["width"], data["height"]), "#FFFFFF")
     backColorTemplate = frontColorTemplate.copy()
     backBlackTemplate = frontBlackTemplate.copy()
-
-    frontColorTemplate.paste(borderImage, (0, 0), borderImage)
 
     if not os.path.exists("art"):
         print("Creating new art directory")
@@ -197,15 +219,18 @@ def main():
 
 def createPDF(cType, side, reversed):
     pdf = FPDF()
-    pdf.add_page()
     cardW = 70
     cardH = 93
     x = 0
     y = 0
-    print(cType)
+    count = 0
     filelist = glob.glob("./art/"+cType+"/*.png")
     for image in sorted(filelist):
         if (side in image):
+            if (count == 0):
+                pdf.add_page()
+                count = 9
+            count -= 1
             pdf.image(image, x=(x*cardW if (not reversed)
                       else cardW*(2-x)), y=y*cardH, w=cardW, h=cardH)
             x += 1
@@ -214,7 +239,6 @@ def createPDF(cType, side, reversed):
                 y += 1
                 if (y == 3):
                     y = 0
-                    pdf.add_page()
 
     pdf.output(side+cType.capitalize()+"Template.pdf", "F")
 
@@ -242,18 +266,9 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
 
     stylized_image = stylized_image.convert("RGBA")
 
-    width, height = stylized_image.size
-    size = min(width, height)
-    left = (width - size)/2
-    top = (height - size)/2
-    right = (width + size)/2
-    bottom = (height + size)/2
-    cropOff = (0, 0)
-    if ("crop" in character):
-        cropOff = character["crop"]
-    stylized_image = stylized_image.crop(
-        (left+cropOff[0], top+cropOff[1], right+cropOff[0], bottom+cropOff[1]))
-    stylized_image = stylized_image.resize((imageSize, imageSize))
+    width = imageSize
+    height = stylized_image.size[1] * width//stylized_image.size[0]
+    stylized_image = stylized_image.resize((width, height))
 
     words = character["name"].split(" ")
     name = "".join(words[:min(len(words), 2)])
@@ -267,25 +282,42 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
 
 def writeImages(image, fileName, character, offset, frontTemplate, backTemplate):
     color = "white" if ("color" in fileName) else "black"
-    fnt = ImageFont.truetype(data["font"], 80)
+    fnt = ImageFont.truetype(
+        data["font"], 80-(floor(len(character["name"])/10))*8)
     fntSmall = ImageFont.truetype(data["font"], 60)
     traits = "\n".join(character["traits"])
 
+    borderColor = borderColorDefault
+    if ("borderColor" in character):
+        borderColor = character["borderColor"]
+    borderImage = border[borderColor]
+    borderBackImage = borderBack[borderColor]
+
     front = frontTemplate.copy()
-    height = offset[1]
+    Image.blend
+    height = offset[1]+20
     height += drawText(front, character["name"],
                        (front.size[0]//2, height), fnt, color)
+    if ("frontOffset" in character):
+        height += character["frontOffset"]
     height += drawImage(image, (offset[0], height), front, color == "white")
+    front.paste(borderImage, (0, 0), borderImage)
     front.save(fileName+"_front.png")
 
     back = backTemplate.copy()
     height = offset[1]+20
     height += drawText(back, character["name"],
                        (front.size[0]//2, height), fntSmall, color)
-    height += drawImage(image, (offset[0], height), back, color == "white")
+    if ("backOffset" in character):
+        height += character["backOffset"]
+    newSize=0.7
+    smallImage = image.resize(
+        (int(image.size[0]*newSize), int(image.size[1]*newSize)))
+    height += drawImage(smallImage,
+                        (offset[0]+(image.size[0]-smallImage.size[0])/2, height), back, color == "white")
     back.paste(borderBackImage, (0, 0), borderBackImage)
     drawText(back, traits,
-                       (back.size[0]//2, back.size[1]//1.47), fntSmall, "black")
+             (back.size[0]//2, back.size[1]//1.47), fntSmall, "white")
     back.save(fileName+"_back.png")
 
 
