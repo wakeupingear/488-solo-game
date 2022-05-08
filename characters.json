@@ -21,7 +21,7 @@
     "borderWidth": 20,
     "topPadding": 4,
     "savePdf": true,
-    "bgImage": "./bg.PNG",
+    "bgImage": "./bg4.PNG",
     "borderImage": "./border.png",
     "borderBackImage": "./borderBack.png",
     "font": "./Poppins-Medium.ttf",
@@ -46,6 +46,8 @@
         {
             "borderColor": "red",
             "name": "Henry the Entrepreneur",
+            "width": 610,
+            "frontOffset": -30,
             "image": "./characterArt/henry.png",
             "traits": [
                 "+5 Charisma",
@@ -56,6 +58,10 @@
         {
             "borderColor": "neonGreen",
             "name": "Xbox Kid",
+            "width": 750,
+            "frontOffset": 40,
+            "backSize": 0.85,
+            "backOffset": -30,
             "image": "./characterArt/xbox.png",
             "traits": [
                 "+5 Speed",
@@ -66,6 +72,7 @@
         {
             "borderColor": "darkBrown",
             "frontOffset": -10,
+            "backOffset": -30,
             "name": "Pluto the Human Terrarium",
             "image": "./characterArt/pluto.png",
             "traits": [
@@ -77,6 +84,8 @@
         {
             "borderColor": "purple",
             "name": "Chester Fester",
+            "frontOffset": -40,
+            "backOffset": -40,
             "image": "./characterArt/chester.png",
             "traits": [
                 "+4 Foodie",
@@ -87,6 +96,10 @@
         {
             "borderColor": "pink",
             "name": "MOMMM!!!!",
+            "width": 800,
+            "frontOffset": -100,
+            "backOffset": -110,
+            "backSize": 0.8,
             "image": "./characterArt/mom.png",
             "traits": [
                 "+4 Wisdom",
@@ -97,6 +110,7 @@
         {
             "borderColor": "orange",
             "name": "Mina the MORTAR",
+            "backOffset": -20,
             "image": "./characterArt/mina.png",
             "traits": [
                 "+5 Strength",
@@ -107,6 +121,8 @@
         {
             "borderColor": "darkBlue",
             "name": "Brock Southampton",
+            "frontOffset": -50,
+            "width": 550,
             "image": "./characterArt/brock.png",
             "traits": [
                 "+4 Coolness",
@@ -116,8 +132,10 @@
         },
         {
             "name": "That Nosy Neighbor",
-            "frontOffset": -90,
+            "frontOffset": -70,
             "backOffset": -40,
+            "width": 620,
+            "backSize": 0.75,
             "image": "./characterArt/neighbor.png",
             "traits": [
                 "+3 Wisdom",
@@ -128,6 +146,10 @@
         {
             "borderColor": "darkBlue",
             "name": "Jaden the Supportive Friend",
+            "width": 650,
+            "frontOffset": -40,
+            "backOffset": -40,
+            "backSize": 0.65,
             "image": "./characterArt/jaden.png",
             "traits": [
                 "+5 Wisdom",
@@ -138,6 +160,9 @@
         {
             "borderColor": "tan",
             "name": "Fido the Afghan Hound",
+            "frontOffset": -15,
+            "backOffset": -20,
+            "backSize": 0.8,
             "image": "./characterArt/fido.png",
             "traits": [
                 "+3 Speed",
@@ -148,6 +173,8 @@
         {
             "borderColor": "yellow",
             "name": "Superhero Man",
+            "frontOffset": -50,
+            "backOffset": -50,
             "image": "./characterArt/superhero.png",
             "traits": [
                 "+6 Allergies",
@@ -161,7 +188,8 @@
         },
         {
             "borderColor": "red",
-            "frontOffset": -20,
+            "frontOffset": -50,
+            "backOffset": -50,
             "name": "Jeff's Cousin Jeff",
             "image": "./characterArt/cousin.png",
             "traits": [
@@ -171,8 +199,9 @@
         },
         {
             "borderColor": "green",
-            "frontOffset": -90,
-            "backOffset": -70,
+            "frontOffset": -126,
+            "backOffset": -120,
+            "backSize": 0.68,
             "name": "Thaddeus G. Gollywhopper",
             "image": "./characterArt/thaddeus.png",
             "traits": [
@@ -183,7 +212,8 @@
         },
         {
             "borderColor": "olive",
-            "frontOffset": -90,
+            "frontOffset": -118,
+            "backOffset": -70,
             "name": "Kentucky Wyoming",
             "image": "./characterArt/kentucky.png",
             "traits": [
@@ -194,7 +224,9 @@
         },
         {
             "name": "TANK",
+            "frontOffset": -80,
             "backOffset": -60,
+            "width": 860,
             "image": "./characterArt/tank.png",
             "traits": [
                 "+5 Strength",
@@ -205,6 +237,9 @@
         {
             "borderColor": "white",
             "name": "Nina Nirvana",
+            "frontOffset": 20,
+            "backOffset": -10,
+            "backSize": 0.75,
             "image": "./characterArt/nina.png",
             "traits": [
                 " ",
@@ -213,8 +248,9 @@
         },
         {
             "name": "June Montgomery",
-            "backOffset": -50,
-            "frontOffset": -100,
+            "backOffset": -140,
+            "frontOffset": -170,
+            "width": 800,
             "borderColor": "darkBlue",
             "image": "./characterArt/june.png",
             "traits": [
@@ -225,7 +261,8 @@
         },
         {
             "borderColor": "lightBlue",
-            "frontOffset": -20,
+            "frontOffset": -50,
+            "backOffset": -50,
             "name": "Jeffrey Jefferson",
             "image": "./characterArt/jeff.png",
             "traits": [

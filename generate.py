@@ -28,7 +28,7 @@ hub_model = hub.load(
 
 mpl.rcParams['figure.figsize'] = (12, 12)
 mpl.rcParams['axes.grid'] = False
-imageSize = 630
+imageSize = 700
 
 f = open("characters.json", "r+")
 data = json.load(f)
@@ -44,22 +44,40 @@ borderBackImageBase = borderBackImageBase.resize(
     (data["width"], data["height"]))
 borderBack = {}
 print("Creating outlines...")
+borderColors = {}
+if not os.path.exists("borders"):
+    os.makedirs("borders")
 for key, value in data["borderColors"].items():
     color = value.lstrip("#")
-    rgb = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
-    imgData = np.array(borderImageBase)
-    for x in range(imgData.shape[0]):
-        for y in range(imgData.shape[1]):
-            if imgData[x, y][3] > 0:
-                imgData[x, y] = (max(rgb[0]+imgData[x,y][0]-255,0), max(rgb[1]+imgData[x,y][1]-255,0), max(rgb[2]+imgData[x,y][2]-255,0), imgData[x, y][3])
-    border[key] = Image.fromarray(imgData)
+    if os.path.exists("borders/"+key+".png"):
+        border[key] = Image.open("borders/"+key+".png")
+        borderBack[key] = Image.open("borders/"+key+"Back.png")
+        continue
+    borderColors[key] = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
-    imgData = np.array(borderBackImageBase)
+
+def generate_border(image, suffix=""):
+    imgData = np.array(image)
+    newObj = {}
+    for key, value in borderColors.items():
+        newObj[key] = imgData.copy()
     for x in range(imgData.shape[0]):
         for y in range(imgData.shape[1]):
             if imgData[x, y][3] > 0:
-                imgData[x, y] = (max(rgb[0]+imgData[x,y][0]-255,0), max(rgb[1]+imgData[x,y][1]-255,0), max(rgb[2]+imgData[x,y][2]-255,0), imgData[x, y][3])
-    borderBack[key] = Image.fromarray(imgData)
+                for color, rgb in borderColors.items():
+                    newObj[color][x, y] = (max(rgb[0]+imgData[x, y][0]-255, 0), max(
+                        rgb[1]+imgData[x, y][1]-255, 0), max(rgb[2]+imgData[x, y][2]-255, 0), imgData[x, y][3])
+    finalObj = {}
+    for color, img in newObj.items():
+        finalObj[color] = Image.fromarray(img)
+        finalObj[color].save("borders/"+color+suffix+".png")
+    return finalObj
+
+
+if len(data["borderColors"]) > len(border):
+    border = generate_border(borderImageBase).update(border)
+    borderBack = generate_border(
+        borderBackImageBase, "Back").update(borderBack)
 
 
 def tensor_to_image(tensor):
@@ -126,7 +144,7 @@ def wrap_text(text, width, font):
     return text_lines
 
 
-def drawText(image, msg, offset, fnt, fill, maxWidth=650, stroke_width=5):
+def drawText(image, msg, offset, fnt, fill, maxWidth=650, verticalSpacing=1.2, stroke_width=5):
     draw = ImageDraw.Draw(image)
     baseW, baseH = draw.textsize("KSASFLI", font=fnt)
     msg = wrap_text(msg, maxWidth, fnt)
@@ -134,7 +152,7 @@ def drawText(image, msg, offset, fnt, fill, maxWidth=650, stroke_width=5):
     lineCount = 0
     for i, line in enumerate(msg):
         w, h = draw.textsize(line, font=fnt)
-        height = (baseH*1.4)*(i)
+        height = (baseH*verticalSpacing)*(i)
         lineCount += 1
         draw.text((-w//2+offset[0], baseH//2+offset[1] +
                   height), line, fill=fill, font=fnt,
@@ -206,10 +224,10 @@ def main():
                     frontColorTemplate, backColorTemplate, frontBlackTemplate, backBlackTemplate, offset)
     if not data["savePdf"]:
         exit(0)
-    print("Creating color fronts...")
-    createPDF("color", "front", False)
     print("Creating color backs...")
     createPDF("color", "back", True)
+    print("Creating color fronts...")
+    createPDF("color", "front", False)
 
     print("Creating black fronts...")
     createPDF("black", "front", False)
@@ -267,6 +285,11 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
     stylized_image = stylized_image.convert("RGBA")
 
     width = imageSize
+    if ("width" in character):
+        width = character["width"]
+    offset = list(offset)
+    offset[0] = (data["width"] - width)//2
+    offset = tuple(offset)
     height = stylized_image.size[1] * width//stylized_image.size[0]
     stylized_image = stylized_image.resize((width, height))
 
@@ -283,8 +306,10 @@ def process(character, data, defaultStyle, frontColorTemplate, backColorTemplate
 def writeImages(image, fileName, character, offset, frontTemplate, backTemplate):
     color = "white" if ("color" in fileName) else "black"
     fnt = ImageFont.truetype(
-        data["font"], 80-(floor(len(character["name"])/10))*8)
-    fntSmall = ImageFont.truetype(data["font"], 60)
+        data["font"], 76-(floor(len(character["name"])/10))*8)
+    fntSmall = ImageFont.truetype(
+        data["font"], 60-(floor(len(character["name"])/10))*4)
+    fntSmallFixed = ImageFont.truetype(data["font"], 60)
     traits = "\n".join(character["traits"])
 
     borderColor = borderColorDefault
@@ -295,7 +320,7 @@ def writeImages(image, fileName, character, offset, frontTemplate, backTemplate)
 
     front = frontTemplate.copy()
     Image.blend
-    height = offset[1]+20
+    height = offset[1]
     height += drawText(front, character["name"],
                        (front.size[0]//2, height), fnt, color)
     if ("frontOffset" in character):
@@ -305,19 +330,23 @@ def writeImages(image, fileName, character, offset, frontTemplate, backTemplate)
     front.save(fileName+"_front.png")
 
     back = backTemplate.copy()
-    height = offset[1]+20
+    height = offset[1]+12
     height += drawText(back, character["name"],
                        (front.size[0]//2, height), fntSmall, color)
     if ("backOffset" in character):
         height += character["backOffset"]
-    newSize=0.7
+    newSize = 0.7
+    if ("backSize" in character):
+        newSize = character["backSize"]
     smallImage = image.resize(
         (int(image.size[0]*newSize), int(image.size[1]*newSize)))
     height += drawImage(smallImage,
                         (offset[0]+(image.size[0]-smallImage.size[0])/2, height), back, color == "white")
     back.paste(borderBackImage, (0, 0), borderBackImage)
+    if (character["traits"] == 2):
+        height += 60
     drawText(back, traits,
-             (back.size[0]//2, back.size[1]//1.47), fntSmall, "white")
+             (back.size[0]//2, back.size[1]//1.47), fntSmallFixed, "white", verticalSpacing=1.4)
     back.save(fileName+"_back.png")
 
 
